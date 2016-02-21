@@ -1,0 +1,5 @@
+packages/
+SexyDb/bin/
+SexyDb.Tests/obj/
+SexyDb.Tests/bin/
+SexyDb/obj/

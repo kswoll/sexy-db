@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SexyDb", "SexyDb\SexyDb.csproj", "{A797424B-EC49-46B0-818C-8E7A8DDE4665}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SexyDb.Tests", "SexyDb.Tests\SexyDb.Tests.csproj", "{432B4878-C6EA-40D6-84B1-0D8AB8444E88}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A797424B-EC49-46B0-818C-8E7A8DDE4665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A797424B-EC49-46B0-818C-8E7A8DDE4665}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A797424B-EC49-46B0-818C-8E7A8DDE4665}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A797424B-EC49-46B0-818C-8E7A8DDE4665}.Release|Any CPU.Build.0 = Release|Any CPU
+		{432B4878-C6EA-40D6-84B1-0D8AB8444E88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{432B4878-C6EA-40D6-84B1-0D8AB8444E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{432B4878-C6EA-40D6-84B1-0D8AB8444E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{432B4878-C6EA-40D6-84B1-0D8AB8444E88}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
