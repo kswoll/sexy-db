@@ -84,6 +84,7 @@
     <Compile Include="DbNode.cs" />
     <Compile Include="DbObjectPropertyMetaData.cs" />
     <Compile Include="DbPropertyNode.cs" />
+    <Compile Include="DbValuePropertyNode.cs" />
     <Compile Include="ISexyDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SexyDatabase.cs" />
