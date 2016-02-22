@@ -48,6 +48,18 @@ namespace SexyDb.Tests
             Assert.AreEqual(db.IntProperty, value);
         }
 
+        [Test]
+        public async Task LoadIntProperty()
+        {
+            var db = new IntPropertyDatabase();
+            db.IntProperty = 5;
+            await db.WaitForIdle();
+
+            await ((ISexyDatabase)db).Node.PropertyNodes.Single().File.Edit("4");
+
+            Assert.AreEqual("4", db.IntProperty.ToString());
+        }
+
         public class IntPropertyDatabase : TestDatabase
         {
             public int IntProperty { get; set; }

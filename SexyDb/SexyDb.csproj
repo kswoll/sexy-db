@@ -87,6 +87,7 @@
     <Compile Include="ISexyDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SexyDatabase.cs" />
+    <Compile Include="TypeConverters\TypeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />

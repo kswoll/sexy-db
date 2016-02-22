@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reactive.Linq;
+using SexyDb.TypeConverters;
 using SexyReact;
 
 namespace SexyDb
@@ -51,7 +52,9 @@ namespace SexyDb
 
         private void SourceChanged(object sender, FileSystemEventArgs fileSystemEventArgs)
         {
-            MetaData.Property.SetValue(Container, System.IO.File.ReadAllText(File.FullName));
+            var text = System.IO.File.ReadAllText(File.FullName);
+            var value = TypeConverter.Convert(text, MetaData.Property.PropertyType);
+            MetaData.Property.SetValue(Container, value);
         }
 
         private void OnChanged(IPropertyChanged changed)
