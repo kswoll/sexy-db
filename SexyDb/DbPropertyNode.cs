@@ -63,7 +63,7 @@ namespace SexyDb
             if (value == null)
                 File.Delete();
             else
-                System.IO.File.WriteAllText(File.FullName, changed.NewValue.ToString());
+                System.IO.File.WriteAllText(File.FullName, (string)TypeConverter.Convert(changed.NewValue, typeof(string)));
         }
     }
 }

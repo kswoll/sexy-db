@@ -87,7 +87,11 @@
     <Compile Include="ISexyDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SexyDatabase.cs" />
+    <Compile Include="TypeConverters\DateTimeToStringConverter.cs" />
+    <Compile Include="TypeConverters\ITypeConverter.cs" />
+    <Compile Include="TypeConverters\StringToDateTimeConverter.cs" />
     <Compile Include="TypeConverters\TypeConverter.cs" />
+    <Compile Include="TypeConverters\TypeConverterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />

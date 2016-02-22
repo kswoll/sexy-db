@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,12 +58,40 @@ namespace SexyDb.Tests
 
             await ((ISexyDatabase)db).Node.PropertyNodes.Single().File.Edit("4");
 
-            Assert.AreEqual("4", db.IntProperty.ToString());
+            Assert.AreEqual(4, db.IntProperty);
         }
 
         public class IntPropertyDatabase : TestDatabase
         {
             public int IntProperty { get; set; }
+        }
+
+        [Test]
+        public async Task SaveDateTimeProperty()
+        {
+            var db = new DateTimePropertyDatabase();
+            db.DateTimeProperty = new DateTime(2001, 2, 3, 4, 5, 6);
+            await db.WaitForIdle();
+
+            var value = DateTime.ParseExact(File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Single().File.FullName), "o", null);
+            Assert.AreEqual(db.DateTimeProperty, value);
+        }
+
+        [Test]
+        public async Task LoadDateTimeProperty()
+        {
+            var db = new DateTimePropertyDatabase();
+            db.DateTimeProperty = new DateTime(2001, 2, 3, 4, 5, 6);
+            await db.WaitForIdle();
+
+            await ((ISexyDatabase)db).Node.PropertyNodes.Single().File.Edit(new DateTime(2002, 3, 4, 5, 6, 7).ToString("o"));
+
+            Assert.AreEqual(new DateTime(2002, 3, 4, 5, 6, 7), db.DateTimeProperty);
+        }
+
+        public class DateTimePropertyDatabase : TestDatabase
+        {
+            public DateTime DateTimeProperty { get; set; }
         }
     }
 }
