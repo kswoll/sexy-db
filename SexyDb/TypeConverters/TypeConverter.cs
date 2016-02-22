@@ -27,6 +27,11 @@ namespace SexyDb.TypeConverters
             if (typeConverters.TryGetValue(Tuple.Create(o.GetType(), targetType), out converter))
                 return converter.Convert(o, targetType);
 
+            if (o is Enum)
+                return o.ToString();
+            if (targetType.IsEnum)
+                return Enum.Parse(targetType, (string)o);
+
             return System.Convert.ChangeType(o, targetType);
         }
     }

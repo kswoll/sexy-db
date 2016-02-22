@@ -93,5 +93,38 @@ namespace SexyDb.Tests
         {
             public DateTime DateTimeProperty { get; set; }
         }
+
+        [Test]
+        public async Task SaveEnumProperty()
+        {
+            var db = new EnumPropertyDatabase();
+            db.EnumProperty = TestEnum.Value2;
+            await db.WaitForIdle();
+
+            var value = File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Single().File.FullName);
+            Assert.AreEqual(db.EnumProperty.ToString(), value);
+        }
+
+        [Test]
+        public async Task LoadEnumProperty()
+        {
+            var db = new EnumPropertyDatabase();
+            db.EnumProperty = TestEnum.Value2;
+            await db.WaitForIdle();
+
+            await ((ISexyDatabase)db).Node.PropertyNodes.Single().File.Edit(TestEnum.Value1.ToString());
+
+            Assert.AreEqual(TestEnum.Value1, db.EnumProperty);
+        }
+
+        public class EnumPropertyDatabase : TestDatabase
+        {
+            public TestEnum EnumProperty { get; set; }
+        }
+
+        public enum TestEnum
+        {
+            Value1, Value2
+        }
     }
 }
