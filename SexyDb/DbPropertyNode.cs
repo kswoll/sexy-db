@@ -7,19 +7,17 @@ namespace SexyDb
 {
     public class DbPropertyNode : DbNode
     {
-        public SexyDatabase Database { get; }
         public DbObjectPropertyMetaData MetaData { get; }
         public IRxObject Container { get; }
         public FileInfo File { get; }
 
         public DbPropertyNode(SexyDatabase database, DbObjectPropertyMetaData metaData, IRxObject container, FileInfo file) : base(database)
         {
-            Database = database;
             MetaData = metaData;
             Container = container;
             File = file;
 
-            bool isSavePending = false;
+            var isSavePending = false;
             container.GetChangedByProperty(metaData.Property)
                 .Do(x =>
                 {
@@ -44,6 +42,16 @@ namespace SexyDb
                             database.idle.Set();
                     }
                 });
+            file.Create().Close();
+            var fileSystemWatcher = new FileSystemWatcher(file.DirectoryName, file.Name);
+            fileSystemWatcher.Changed += SourceChanged;
+            fileSystemWatcher.EnableRaisingEvents = true;
+            Console.WriteLine();
+        }
+
+        private void SourceChanged(object sender, FileSystemEventArgs fileSystemEventArgs)
+        {
+            MetaData.Property.SetValue(Container, System.IO.File.ReadAllText(File.FullName));
         }
 
         private void OnChanged(IPropertyChanged changed)
