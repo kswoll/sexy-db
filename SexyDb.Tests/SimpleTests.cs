@@ -16,7 +16,7 @@ namespace SexyDb.Tests
             db.StringProperty = "foo";
             await db.WaitForIdle();
 
-            var value = File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.FullName);
+            var value = File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.FullName);
             Assert.AreEqual(db.StringProperty, value);
         }
 
@@ -27,7 +27,7 @@ namespace SexyDb.Tests
             db.StringProperty = "foo";
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.Edit("bar");
+            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit("bar");
 
             Assert.AreEqual("bar", db.StringProperty);
         }
@@ -44,7 +44,7 @@ namespace SexyDb.Tests
             db.IntProperty = 5;
             await db.WaitForIdle();
 
-            var value = int.Parse(File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.FullName));
+            var value = int.Parse(File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.FullName));
             Assert.AreEqual(db.IntProperty, value);
         }
 
@@ -55,7 +55,17 @@ namespace SexyDb.Tests
             db.IntProperty = 5;
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.Edit("4");
+            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit("4");
+
+            Assert.AreEqual(4, db.IntProperty);
+        }
+
+        [Test]
+        public async Task LoadIntPropertyUninitialized()
+        {
+            var db = new IntPropertyDatabase();
+
+            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit("4");
 
             Assert.AreEqual(4, db.IntProperty);
         }
@@ -72,7 +82,7 @@ namespace SexyDb.Tests
             db.DateTimeProperty = new DateTime(2001, 2, 3, 4, 5, 6);
             await db.WaitForIdle();
 
-            var value = DateTime.ParseExact(File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.FullName), "o", null);
+            var value = DateTime.ParseExact(File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.FullName), "o", null);
             Assert.AreEqual(db.DateTimeProperty, value);
         }
 
@@ -83,7 +93,7 @@ namespace SexyDb.Tests
             db.DateTimeProperty = new DateTime(2001, 2, 3, 4, 5, 6);
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.Edit(new DateTime(2002, 3, 4, 5, 6, 7).ToString("o"));
+            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit(new DateTime(2002, 3, 4, 5, 6, 7).ToString("o"));
 
             Assert.AreEqual(new DateTime(2002, 3, 4, 5, 6, 7), db.DateTimeProperty);
         }
@@ -100,7 +110,7 @@ namespace SexyDb.Tests
             db.EnumProperty = TestEnum.Value2;
             await db.WaitForIdle();
 
-            var value = File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.FullName);
+            var value = File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.FullName);
             Assert.AreEqual(db.EnumProperty.ToString(), value);
         }
 
@@ -111,7 +121,7 @@ namespace SexyDb.Tests
             db.EnumProperty = TestEnum.Value2;
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.Edit(TestEnum.Value1.ToString());
+            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit(TestEnum.Value1.ToString());
 
             Assert.AreEqual(TestEnum.Value1, db.EnumProperty);
         }

@@ -2,12 +2,7 @@
 //     Copyright (c) 2016 PlanGrid, Inc. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Concurrent;
 using System.IO;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
 using SexyReact;
@@ -25,6 +20,23 @@ namespace SexyDb
         public SexyDatabase(string folder)
         {
             node = new DbObjectNode(this, this, new DirectoryInfo(folder));
+
+            var fileSystemWatcher = new FileSystemWatcher(folder, "*.*");
+            fileSystemWatcher.Changed += FileSystemChanged;
+            fileSystemWatcher.Deleted += FileSystemChanged;
+            fileSystemWatcher.IncludeSubdirectories = true;
+            fileSystemWatcher.NotifyFilter = NotifyFilters.LastWrite;
+            fileSystemWatcher.EnableRaisingEvents = true;
+        }
+
+        private void FileSystemChanged(object sender, FileSystemEventArgs e)
+        {
+            var relativePath = e.FullPath.Substring(node.Directory.FullName.Length).TrimStart(Path.DirectorySeparatorChar);
+            if (relativePath.Length > 0)
+            {
+                var targetNode = node.EvaluatePath(relativePath.Split(Path.DirectorySeparatorChar), 0);
+                targetNode?.NotifyFileSystemChanged(e);
+            }
         }
 
         DbObjectNode ISexyDatabase.Node => node;

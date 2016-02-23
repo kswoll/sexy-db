@@ -78,12 +78,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbObjectListPropertyNode.cs" />
     <Compile Include="DbObjectMetaData.cs" />
     <Compile Include="DbObjectMetaDataCache.cs" />
     <Compile Include="DbObjectNode.cs" />
     <Compile Include="DbNode.cs" />
-    <Compile Include="DbObjectPropertyMetaData.cs" />
+    <Compile Include="DbPropertyMetaData.cs" />
+    <Compile Include="DbObjectPropertyNode.cs" />
     <Compile Include="DbPropertyNode.cs" />
+    <Compile Include="DbPropertyType.cs" />
     <Compile Include="DbValuePropertyNode.cs" />
     <Compile Include="ISexyDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,6 +96,7 @@
     <Compile Include="TypeConverters\StringToDateTimeConverter.cs" />
     <Compile Include="TypeConverters\TypeConverter.cs" />
     <Compile Include="TypeConverters\TypeConverterAttribute.cs" />
+    <Compile Include="Utils\FileUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />

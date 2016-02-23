@@ -7,11 +7,11 @@ namespace SexyDb
 {
     public class DbObjectMetaData
     {
-        public ImmutableList<DbObjectPropertyMetaData> Properties { get; }
+        public ImmutableList<DbPropertyMetaData> Properties { get; }
 
         public DbObjectMetaData(Type type)
         {
-            Properties = type.GetProperties().Where(IsSerializable).Select(x => new DbObjectPropertyMetaData(x)).ToImmutableList();
+            Properties = type.GetProperties().Where(IsSerializable).Select(x => new DbPropertyMetaData(x)).ToImmutableList();
         }
 
         private bool IsSerializable(PropertyInfo property)

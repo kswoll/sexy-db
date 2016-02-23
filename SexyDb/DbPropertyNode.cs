@@ -4,10 +4,10 @@ namespace SexyDb
 {
     public abstract class DbPropertyNode : DbNode
     {
-        public DbObjectPropertyMetaData MetaData { get; }
+        public DbPropertyMetaData MetaData { get; }
         public IRxObject Container { get; }
 
-        public DbPropertyNode(SexyDatabase database, DbObjectPropertyMetaData metaData, IRxObject container) : base(database)
+        protected DbPropertyNode(SexyDatabase database, DbPropertyMetaData metaData, IRxObject container) : base(database)
         {
             MetaData = metaData;
             Container = container;

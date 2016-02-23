@@ -10,7 +10,7 @@ namespace SexyDb
     {
         public FileInfo File { get; }
 
-        public DbValuePropertyNode(SexyDatabase database, DbObjectPropertyMetaData metaData, IRxObject container, FileInfo file) : base(database, metaData, container)
+        public DbValuePropertyNode(SexyDatabase database, DbPropertyMetaData metaData, IRxObject container, FileInfo file) : base(database, metaData, container)
         {
             File = file;
 
@@ -40,17 +40,27 @@ namespace SexyDb
                     }
                 });
             file.Create().Close();
-            var fileSystemWatcher = new FileSystemWatcher(file.DirectoryName, file.Name);
-            fileSystemWatcher.Changed += SourceChanged;
-            fileSystemWatcher.EnableRaisingEvents = true;
-            Console.WriteLine();
+
+            OnChanged(new PropertyChanged<object>(metaData.Property, null, metaData.Property.GetValue(container, null)));
         }
 
-        private void SourceChanged(object sender, FileSystemEventArgs fileSystemEventArgs)
+        public override DbNode EvaluatePath(string[] path, int index)
         {
-            var text = System.IO.File.ReadAllText(File.FullName);
-            var value = TypeConverter.Convert(text, MetaData.Property.PropertyType);
-            MetaData.Property.SetValue(Container, value);
+            throw new InvalidOperationException($"Cannot evaluate a subpath to a value property");
+        }
+
+        protected override void OnFileSystemChanged(FileSystemEventArgs args)
+        {
+            base.OnFileSystemChanged(args);
+
+            var lastWriteTime = File.LastWriteTime;
+            File.Refresh();
+            if (File.LastWriteTime != lastWriteTime)
+            {
+                var text = System.IO.File.ReadAllText(File.FullName);
+                var value = TypeConverter.Convert(text, MetaData.Property.PropertyType);
+                MetaData.Property.SetValue(Container, value);                
+            }
         }
 
         private void OnChanged(IPropertyChanged changed)
@@ -61,6 +71,5 @@ namespace SexyDb
             else
                 System.IO.File.WriteAllText(File.FullName, (string)TypeConverter.Convert(changed.NewValue, typeof(string)));
         }
-
     }
 }
