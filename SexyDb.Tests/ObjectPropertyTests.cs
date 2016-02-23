@@ -15,7 +15,7 @@ namespace SexyDb.Tests
             var db = new ObjectPropertyDatabase();
             db.Object = new TestObject();
 
-            Assert.IsTrue(((ISexyDatabase)db).Node.PropertyNodes.Cast<DbObjectPropertyNode>().Single().Directory.Exists);
+            Assert.IsTrue(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbObjectPropertyNode>().Single().Directory.Exists);
         }
 
         [Test]
@@ -25,7 +25,7 @@ namespace SexyDb.Tests
             db.Object = new TestObject();
             db.Object = null;
 
-            Assert.IsFalse(((ISexyDatabase)db).Node.PropertyNodes.Cast<DbObjectPropertyNode>().Single().Directory.Exists);
+            Assert.IsFalse(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbObjectPropertyNode>().Single().Directory.Exists);
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace SexyDb.Tests
 
             await db.WaitForIdle();
 
-            Assert.AreEqual("foo", File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Cast<DbObjectPropertyNode>().Single().Object.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.FullName));
+            Assert.AreEqual("foo", File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbObjectPropertyNode>().Single().Object.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.FullName));
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace SexyDb.Tests
 
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Cast<DbObjectPropertyNode>().Single().Object.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.Edit("bar");
+            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbObjectPropertyNode>().Single().Object.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit("bar");
 
             Assert.AreEqual("bar", db.Object.StringProperty);
         }
@@ -62,7 +62,7 @@ namespace SexyDb.Tests
 
             await db.WaitForIdle();
 
-            Assert.AreEqual("foo", File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Cast<DbObjectPropertyNode>().Single().Object.PropertyNodes.Cast<DbValuePropertyNode>().Single().File.FullName));            
+            Assert.AreEqual("foo", File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbObjectPropertyNode>().Single().Object.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.FullName));            
         }
 
         public class ObjectPropertyDatabase : TestDatabase

@@ -27,19 +27,19 @@ namespace SexyDb
             PropertyNodes = MetaData.Properties.Select(x => CreateNode(x, obj)).ToImmutableDictionary(x => x.MetaData.Name);
         }
 
-        public override DbNode EvaluatePath(string[] parts, int index)
+        public override DbNode EvaluatePath(string[] parts, int index, bool returnLastNonNullNode = false)
         {
             DbPropertyNode property;
             if (PropertyNodes.TryGetValue(parts[index], out property))
             {
                 if (index < parts.Length - 1)
-                    return property.EvaluatePath(parts, index + 1);
+                    return property.EvaluatePath(parts, index + 1, returnLastNonNullNode);
                 else
                     return property;
             }
             else
             {
-                return null;
+                return returnLastNonNullNode ? this : null;
             }
         }
 

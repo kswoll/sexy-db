@@ -18,9 +18,9 @@ namespace SexyDb
             container.GetChangedByProperty(metaData.Property).Subscribe(OnChanged);
         }
 
-        public override DbNode EvaluatePath(string[] path, int index)
+        public override DbNode EvaluatePath(string[] path, int index, bool returnLastNonNullNode = false)
         {
-            return Object.EvaluatePath(path, index);
+            return Object?.EvaluatePath(path, index, returnLastNonNullNode);
         }
 
         private void OnChanged(IPropertyChanged changed)

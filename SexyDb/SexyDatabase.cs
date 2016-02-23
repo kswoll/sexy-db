@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
 using SexyReact;
@@ -22,20 +23,32 @@ namespace SexyDb
             node = new DbObjectNode(this, this, new DirectoryInfo(folder));
 
             var fileSystemWatcher = new FileSystemWatcher(folder, "*.*");
-            fileSystemWatcher.Changed += FileSystemChanged;
-            fileSystemWatcher.Deleted += FileSystemChanged;
+            fileSystemWatcher.Changed += FileChanged;
+            fileSystemWatcher.Created += FileExistance;
+            fileSystemWatcher.Deleted += FileExistance;
             fileSystemWatcher.IncludeSubdirectories = true;
-            fileSystemWatcher.NotifyFilter = NotifyFilters.LastWrite;
+            fileSystemWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             fileSystemWatcher.EnableRaisingEvents = true;
         }
 
-        private void FileSystemChanged(object sender, FileSystemEventArgs e)
+        private void FileChanged(object sender, FileSystemEventArgs e)
         {
             var relativePath = e.FullPath.Substring(node.Directory.FullName.Length).TrimStart(Path.DirectorySeparatorChar);
             if (relativePath.Length > 0)
             {
                 var targetNode = node.EvaluatePath(relativePath.Split(Path.DirectorySeparatorChar), 0);
                 targetNode?.NotifyFileSystemChanged(e);
+            }
+        }
+
+        private void FileExistance(object sender, FileSystemEventArgs e)
+        {
+            var relativePath = e.FullPath.Substring(node.Directory.FullName.Length).TrimStart(Path.DirectorySeparatorChar);
+            if (relativePath.Length > 0)
+            {
+                var parts = relativePath.Split(Path.DirectorySeparatorChar);
+                var targetNode = node.EvaluatePath(parts, 0, true);
+                targetNode?.NotifyFileSystemChanged(e);                    
             }
         }
 

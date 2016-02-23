@@ -44,9 +44,9 @@ namespace SexyDb
             OnChanged(new PropertyChanged<object>(metaData.Property, null, metaData.Property.GetValue(container, null)));
         }
 
-        public override DbNode EvaluatePath(string[] path, int index)
+        public override DbNode EvaluatePath(string[] path, int index, bool returnLastNonNullNode = false)
         {
-            throw new InvalidOperationException($"Cannot evaluate a subpath to a value property");
+            throw new InvalidOperationException($"Cannot evaluate a subpath on a value property");
         }
 
         protected override void OnFileSystemChanged(FileSystemEventArgs args)

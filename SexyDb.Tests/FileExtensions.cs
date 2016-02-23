@@ -9,13 +9,9 @@ namespace SexyDb.Tests
     {
         public static async Task Edit(this FileInfo file, string value)
         {
-            var lastModified = file.LastWriteTime;
             File.WriteAllText(file.FullName, value);
-            while (lastModified == file.LastWriteTime)
-            {
-                await Task.Delay(1);
-                file.Refresh();
-            }
+            await Task.Delay(100);
+            file.Refresh();
         }
     }
 }

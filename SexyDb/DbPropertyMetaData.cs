@@ -11,6 +11,7 @@ namespace SexyDb
         public PropertyInfo Property { get; }
         public string Name => Property.Name;
         public DbPropertyType Type { get; }
+        public Type ElementType { get; }
 
         private static readonly HashSet<Type> primitiveTypes = new HashSet<Type>
         {
@@ -33,6 +34,7 @@ namespace SexyDb
             if (typeof(IRxList).IsAssignableFrom(property.PropertyType))
             {
                 var itemType = property.PropertyType.GetGenericArguments().Single();
+                ElementType = itemType;
                 if (IsPrimitive(itemType))
                     Type = DbPropertyType.ValueList;
                 else
@@ -44,6 +46,7 @@ namespace SexyDb
                 if (!IsPrimitive(keyType))
                     throw new ArgumentException("The key to a dictionary must be a primitive");
                 var valueType = property.PropertyType.GetGenericArguments()[1];
+                ElementType = valueType;
                 if (IsPrimitive(valueType))
                     Type = DbPropertyType.ValueDictionary;
                 else
