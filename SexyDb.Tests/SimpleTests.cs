@@ -27,7 +27,8 @@ namespace SexyDb.Tests
             db.StringProperty = "foo";
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit("bar");
+            var file = ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File;
+            await db.EditFile(file, "bar");
 
             Assert.AreEqual("bar", db.StringProperty);
         }
@@ -55,7 +56,8 @@ namespace SexyDb.Tests
             db.IntProperty = 5;
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit("4");
+            var file = ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File;
+            await db.EditFile(file, "4");
 
             Assert.AreEqual(4, db.IntProperty);
         }
@@ -65,7 +67,8 @@ namespace SexyDb.Tests
         {
             var db = new IntPropertyDatabase();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit("4");
+            var file = ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File;
+            await db.EditFile(file, "4");
 
             Assert.AreEqual(4, db.IntProperty);
         }
@@ -93,7 +96,8 @@ namespace SexyDb.Tests
             db.DateTimeProperty = new DateTime(2001, 2, 3, 4, 5, 6);
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit(new DateTime(2002, 3, 4, 5, 6, 7).ToString("o"));
+            var file = ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File;
+            await db.EditFile(file, new DateTime(2002, 3, 4, 5, 6, 7).ToString("o"));
 
             Assert.AreEqual(new DateTime(2002, 3, 4, 5, 6, 7), db.DateTimeProperty);
         }
@@ -121,7 +125,8 @@ namespace SexyDb.Tests
             db.EnumProperty = TestEnum.Value2;
             await db.WaitForIdle();
 
-            await ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.Edit(TestEnum.Value1.ToString());
+            var file = ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File;
+            await db.EditFile(file, TestEnum.Value1.ToString());
 
             Assert.AreEqual(TestEnum.Value1, db.EnumProperty);
         }

@@ -2,6 +2,7 @@
 //     Copyright (c) 2016 PlanGrid, Inc. All rights reserved.
 // </copyright>
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,11 +13,13 @@ namespace SexyDb
 {
     public class SexyDatabase : RxObject, ISexyDatabase
     {
+        public event FileSystemEventHandler FileSystemEvents;
+
         private readonly DbObjectNode node;
 
-        internal readonly AsyncLock locker = new AsyncLock();
-        internal readonly AsyncAutoResetEvent idle = new AsyncAutoResetEvent(false);
-        internal int isSavePending;
+        private readonly AsyncLock locker = new AsyncLock();
+        private readonly AsyncAutoResetEvent idle = new AsyncAutoResetEvent(false);
+        private int isActionPending;
 
         public SexyDatabase(string folder)
         {
@@ -31,6 +34,41 @@ namespace SexyDb
             fileSystemWatcher.EnableRaisingEvents = true;
         }
 
+        public void StartAction(Func<bool> predicate)
+        {
+            using (locker.Lock())
+            {
+                if (predicate())
+                {
+                    isActionPending++;
+                }
+            }
+        }
+
+        public void FinishAction(Action action)
+        {
+            using (locker.Lock())
+            {
+                action();
+                isActionPending--;
+                if (isActionPending == 0)
+                    idle.Set();
+            }            
+        }
+
+        public void Action(Action action)
+        {
+            StartAction(() => true);
+            try
+            {
+                action();
+            }
+            finally
+            {
+                FinishAction(() => {});
+            }
+        }
+
         private void FileChanged(object sender, FileSystemEventArgs e)
         {
             var relativePath = e.FullPath.Substring(node.Directory.FullName.Length).TrimStart(Path.DirectorySeparatorChar);
@@ -38,6 +76,7 @@ namespace SexyDb
             {
                 var targetNode = node.EvaluatePath(relativePath.Split(Path.DirectorySeparatorChar), 0);
                 targetNode?.NotifyFileSystemChanged(e);
+                FileSystemEvents?.Invoke(sender, e);
             }
         }
 
@@ -49,6 +88,7 @@ namespace SexyDb
                 var parts = relativePath.Split(Path.DirectorySeparatorChar);
                 var targetNode = node.EvaluatePath(parts, 0, true);
                 targetNode?.NotifyFileSystemChanged(e);                    
+                FileSystemEvents?.Invoke(sender, e);
             }
         }
 
@@ -58,7 +98,7 @@ namespace SexyDb
         {
             using (await locker.LockAsync())
             {
-                if (isSavePending == 0)
+                if (isActionPending == 0)
                     return;
             }
             await idle.WaitAsync();

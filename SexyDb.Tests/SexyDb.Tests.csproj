@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseTestObject.cs" />
-    <Compile Include="FileExtensions.cs" />
+    <Compile Include="DatabaseExtensions.cs" />
     <Compile Include="ObjectListPropertyTests.cs" />
     <Compile Include="ObjectPropertyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

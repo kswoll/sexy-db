@@ -13,18 +13,18 @@ namespace SexyDb
         public DbPropertyType Type { get; }
         public Type ElementType { get; }
 
-        private static readonly HashSet<Type> primitiveTypes = new HashSet<Type>
+        private static readonly Dictionary<Type, object> primitiveTypesAndDefaultValues = new Dictionary<Type, object>
         {
-            typeof(string), 
-            typeof(DateTime),
-            typeof(int),
-            typeof(bool),
-            typeof(byte),
-            typeof(short),
-            typeof(long),
-            typeof(decimal),
-            typeof(float),
-            typeof(double)
+            [typeof(string)] = null, 
+            [typeof(DateTime)] = default(DateTime),
+            [typeof(int)] = default(int),
+            [typeof(bool)] = default(bool),
+            [typeof(byte)] = default(byte),
+            [typeof(short)] = default(short),
+            [typeof(long)] = default(long),
+            [typeof(decimal)] = default(decimal),
+            [typeof(float)] = default(float),
+            [typeof(double)] = default(double)
         };
 
         public DbPropertyMetaData(PropertyInfo property)
@@ -60,7 +60,26 @@ namespace SexyDb
 
         private bool IsPrimitive(Type type)
         {
-            return primitiveTypes.Contains(type) || type.IsEnum;
+            return primitiveTypesAndDefaultValues.ContainsKey(type) || type.IsEnum;
+        }
+
+        public object DefaultValue
+        {
+            get
+            {
+                if (IsPrimitive(Property.PropertyType))
+                {
+                    return primitiveTypesAndDefaultValues[Property.PropertyType];
+                }
+                else if (Property.PropertyType.IsValueType)
+                {
+                    return Activator.CreateInstance(Property.PropertyType);
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
     }
 }

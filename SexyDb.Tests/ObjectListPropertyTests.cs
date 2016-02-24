@@ -38,7 +38,7 @@ namespace SexyDb.Tests
             Directory.CreateDirectory(itemDirectory);
             var value = "foo";
             var stringFile = new FileInfo(Path.Combine(itemDirectory, nameof(ListItem.StringProperty)));
-            await stringFile.Edit(value);
+            await db.EditFile(stringFile, value);
 
             Assert.AreEqual(value, db.ListObject.Items[0].StringProperty);
         }

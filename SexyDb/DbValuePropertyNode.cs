@@ -16,32 +16,22 @@ namespace SexyDb
 
             var isSavePending = false;
             container.GetChangedByProperty(metaData.Property)
-                .Do(x =>
-                {
-                    using (database.locker.Lock())
-                    {
-                        if (!isSavePending)
-                        {
-                            isSavePending = true;
-                            database.isSavePending++;
-                        }
-                    }
-                })
+                .Do(x => Database.StartAction(() => !isSavePending && (isSavePending = true)))
                 .Throttle(TimeSpan.FromSeconds(.5))
                 .Subscribe(x =>
                 {
                     OnChanged(x);
-                    using (database.locker.Lock())
-                    {
-                        database.isSavePending--;
-                        isSavePending = false;
-                        if (database.isSavePending == 0)
-                            database.idle.Set();
-                    }
+                    database.FinishAction(() => isSavePending = false);
                 });
-            file.Create().Close();
 
-            OnChanged(new PropertyChanged<object>(metaData.Property, null, metaData.Property.GetValue(container, null)));
+            if (!file.Exists)
+                file.Create().Close();
+
+            var newValue = metaData.Property.GetValue(container, null);
+            if (newValue != metaData.DefaultValue)
+            {
+                OnChanged(new PropertyChanged<object>(metaData.Property, null, newValue));
+            }
         }
 
         public override DbNode EvaluatePath(string[] path, int index, bool returnLastNonNullNode = false)
@@ -53,14 +43,17 @@ namespace SexyDb
         {
             base.OnFileSystemChanged(args);
 
-            var lastWriteTime = File.LastWriteTime;
-            File.Refresh();
-            if (File.LastWriteTime != lastWriteTime)
+            Database.Action(() =>
             {
-                var text = System.IO.File.ReadAllText(File.FullName);
-                var value = TypeConverter.Convert(text, MetaData.Property.PropertyType);
-                MetaData.Property.SetValue(Container, value);                
-            }
+                var lastWriteTime = File.LastWriteTime;
+                File.Refresh();
+                if (System.IO.File.Exists(args.FullPath) && (args.ChangeType == WatcherChangeTypes.Created || File.LastWriteTime != lastWriteTime))
+                {
+                    var text = System.IO.File.ReadAllText(File.FullName);
+                    var value = TypeConverter.Convert(text, MetaData.Property.PropertyType);
+                    MetaData.Property.SetValue(Container, value);                
+                }                
+            });
         }
 
         private void OnChanged(IPropertyChanged changed)
