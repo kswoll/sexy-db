@@ -63,23 +63,26 @@ namespace SexyDb
             return primitiveTypesAndDefaultValues.ContainsKey(type) || type.IsEnum;
         }
 
-        public object DefaultValue
+        private object GetDefaultValue(Type type)
         {
-            get
+            if (type.IsEnum)
             {
-                if (IsPrimitive(Property.PropertyType))
-                {
-                    return primitiveTypesAndDefaultValues[Property.PropertyType];
-                }
-                else if (Property.PropertyType.IsValueType)
-                {
-                    return Activator.CreateInstance(Property.PropertyType);
-                }
-                else
-                {
-                    return null;
-                }
+                return GetDefaultValue(type.GetEnumUnderlyingType());
             }
+            if (IsPrimitive(type))
+            {
+                return primitiveTypesAndDefaultValues[type];
+            }
+            else if (Property.PropertyType.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            else
+            {
+                return null;
+            }            
         }
+
+        public object DefaultValue => GetDefaultValue(Property.PropertyType);
     }
 }

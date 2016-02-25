@@ -37,7 +37,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SexyReact, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SexyReact.1.0.57\lib\net45\SexyReact.dll</HintPath>
+      <HintPath>..\packages\SexyReact.1.0.61\lib\net45\SexyReact.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

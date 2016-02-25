@@ -14,6 +14,7 @@ namespace SexyDb
     public class SexyDatabase : RxObject, ISexyDatabase
     {
         public event FileSystemEventHandler FileSystemEvents;
+        public event Action<IPropertyChanged> GlobalChanged;
 
         private readonly DbObjectNode node;
 
@@ -102,6 +103,16 @@ namespace SexyDb
                     return;
             }
             await idle.WaitAsync();
+        }
+
+        internal void NotifyGlobalChanged(IPropertyChanged changed)
+        {
+            OnGlobalChanged(changed);
+        }
+
+        protected void OnGlobalChanged(IPropertyChanged changed)
+        {
+            GlobalChanged?.Invoke(changed);
         }
     }
 }

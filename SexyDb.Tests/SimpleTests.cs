@@ -28,7 +28,7 @@ namespace SexyDb.Tests
             await db.WaitForIdle();
 
             var file = ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File;
-            await db.EditFile(file, "bar");
+            await db.EditFile(file, "bar", () => db.StringProperty);
 
             Assert.AreEqual("bar", db.StringProperty);
         }
