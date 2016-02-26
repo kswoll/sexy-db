@@ -11,31 +11,10 @@ namespace SexyDb.Tests
 {
     public static class DatabaseExtensions
     {
-        public static Task EditFile(this SexyDatabase db, FileInfo file, string value, Func<string> getPropertyValue = null)
+        public static Task EditFile(this SexyDatabase db, FileInfo file, string value)
         {
             var completionSource = new TaskCompletionSource<object>();
-/*
-            FileSystemEventHandler listener = null;
-            listener = (sender, args) =>
-            {
-                var complete = false;
-                lock (locker)
-                {
-                    var propertyValue = getPropertyValue?.Invoke();
-                    if (args.FullPath == file.FullName && File.Exists(args.FullPath))
-                    {
-                        Console.WriteLine($"Completed: Property value: {propertyValue}, File value: {value}");
-                        complete = true;
-                        db.FileSystemEvents -= listener;
-                    }                    
-                }
-                if (complete)
-                {
-                    completionSource.SetResult(null);
-                }
-            };
-            db.FileSystemEvents += listener;
-*/
+
             Action<IPropertyChanged> globalChanged = null;
             globalChanged = changed =>
             {
@@ -44,6 +23,21 @@ namespace SexyDb.Tests
             };
             db.GlobalChanged += globalChanged;
             File.WriteAllText(file.FullName, value);
+            return completionSource.Task.ContinueWith(async => db.WaitForIdle());
+        } 
+
+        public static Task CreateDirectory(this SexyDatabase db, DirectoryInfo directory)
+        {
+            var completionSource = new TaskCompletionSource<object>();
+
+            Action<IPropertyChanged> globalChanged = null;
+            globalChanged = changed =>
+            {
+                db.GlobalChanged -= globalChanged;
+                completionSource.SetResult(null);
+            };
+            db.GlobalChanged += globalChanged;
+            directory.Create();
             return completionSource.Task.ContinueWith(async => db.WaitForIdle());
         } 
     }

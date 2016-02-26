@@ -29,6 +29,17 @@ namespace SexyDb.Tests
         }
 
         [Test]
+        public async Task CreatingFolderCreatesObject()
+        {
+            var db = new ObjectPropertyDatabase();
+            var node = (DbObjectPropertyNode)((ISexyDatabase)db).Node.PropertyNodes.Values.Single();
+
+            await db.CreateDirectory(node.Directory);
+
+            Assert.IsNotNull(db.Object);
+        }
+
+        [Test]
         public async Task SubpropertyIsSaved()
         {
             var db = new ObjectPropertyDatabase();

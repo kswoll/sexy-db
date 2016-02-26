@@ -10,6 +10,9 @@ namespace SexyDb
     {
         public FileInfo File { get; }
 
+        private object locker = new object();
+        private bool isSuppressingChange;
+
         public DbValuePropertyNode(SexyDatabase database, DbPropertyMetaData metaData, IRxObject container, FileInfo file) : base(database, metaData, container)
         {
             File = file;
@@ -24,8 +27,10 @@ namespace SexyDb
                     database.FinishAction(() => isSavePending = false);
                 });
 
-            if (!file.Exists)
-                file.Create().Close();
+            if (File.Exists)
+                Load();
+            else 
+                System.IO.File.WriteAllText(file.FullName, "");
 
             var newValue = metaData.Property.GetValue(container, null);
             if (newValue != metaData.DefaultValue)
@@ -49,15 +54,33 @@ namespace SexyDb
                 File.Refresh();
                 if (System.IO.File.Exists(args.FullPath) && (args.ChangeType == WatcherChangeTypes.Created || File.LastWriteTime != lastWriteTime))
                 {
-                    var text = System.IO.File.ReadAllText(File.FullName);
-                    var value = TypeConverter.Convert(text, MetaData.Property.PropertyType);
-                    MetaData.Property.SetValue(Container, value);                
+                    Load();
                 }                
             });
         }
 
+        private void Load()
+        {
+            lock (locker)
+            {
+                isSuppressingChange = true;
+
+                var text = System.IO.File.ReadAllText(File.FullName);
+                var value = TypeConverter.Convert(text, MetaData.Property.PropertyType);
+                MetaData.Property.SetValue(Container, value);
+
+                isSuppressingChange = false;
+            }
+        }
+
         private void OnChanged(IPropertyChanged changed)
         {
+            lock (locker)
+            {
+                if (isSuppressingChange)
+                    return;
+            }
+
             var value = changed.NewValue;
             if (value == null)
                 File.Delete();

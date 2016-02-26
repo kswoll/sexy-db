@@ -24,7 +24,7 @@ namespace SexyDb.Tests
         }
 
         [Test]
-        public async Task LoadItem()
+        public async Task ItemLoaded()
         {
             var db = new ListDatabase();
             db.ListObject = new ListObject

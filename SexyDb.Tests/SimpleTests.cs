@@ -13,29 +13,57 @@ namespace SexyDb.Tests
         public async Task SaveStringProperty()
         {
             var db = new StringPropertyDatabase();
-            db.StringProperty = "foo";
+            db.StringObject = new StringPropertyObject { StringProperty = "foo" };
             await db.WaitForIdle();
 
-            var value = File.ReadAllText(((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File.FullName);
-            Assert.AreEqual(db.StringProperty, value);
+            var node = (DbValuePropertyNode)((ISexyDatabase)db).Node.EvaluatePath(nameof(StringPropertyDatabase.StringObject), nameof(StringPropertyObject.StringProperty));
+            var value = File.ReadAllText(node.File.FullName);
+            Assert.AreEqual(db.StringObject.StringProperty, value);
+        }
+
+        [Test]
+        public async Task StringPropertySaved()
+        {
+            var db = new StringPropertyDatabase { StringObject = new StringPropertyObject() };
+            db.StringObject.StringProperty = "foo";
+            await db.WaitForIdle();
+
+            var node = (DbValuePropertyNode)((ISexyDatabase)db).Node.EvaluatePath(nameof(StringPropertyDatabase.StringObject), nameof(StringPropertyObject.StringProperty));
+            var value = File.ReadAllText(node.File.FullName);
+            Assert.AreEqual(db.StringObject.StringProperty, value);
         }
 
         [Test]
         public async Task LoadStringProperty()
         {
+            var db = new StringPropertyDatabase { StringObject = new StringPropertyObject() };
+            var node = (DbValuePropertyNode)((ISexyDatabase)db).Node.EvaluatePath(nameof(StringPropertyDatabase.StringObject), nameof(StringPropertyObject.StringProperty));
+            await db.EditFile(node.File, "foo");
+
+            Assert.AreEqual("foo", db.StringObject.StringProperty);
+        }
+
+        [Test]
+        public async Task StringPropertyLoaded()
+        {
             var db = new StringPropertyDatabase();
-            db.StringProperty = "foo";
+            db.StringObject = new StringPropertyObject { StringProperty = "foo" };
             await db.WaitForIdle();
 
-            var file = ((ISexyDatabase)db).Node.PropertyNodes.Values.Cast<DbValuePropertyNode>().Single().File;
-            await db.EditFile(file, "bar", () => db.StringProperty);
+            var node = (DbValuePropertyNode)((ISexyDatabase)db).Node.EvaluatePath(nameof(StringPropertyDatabase.StringObject), nameof(StringPropertyObject.StringProperty));
+            await db.EditFile(node.File, "bar");
 
-            Assert.AreEqual("bar", db.StringProperty);
+            Assert.AreEqual("bar", db.StringObject.StringProperty);
+        }
+
+        public class StringPropertyObject : BaseTestObject
+        {
+            public string StringProperty { get; set; }
         }
 
         public class StringPropertyDatabase : TestDatabase
         {
-            public string StringProperty { get; set; }
+            public StringPropertyObject StringObject { get; set; }
         }
 
         [Test]

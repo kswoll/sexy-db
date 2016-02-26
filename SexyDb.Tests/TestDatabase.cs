@@ -10,7 +10,11 @@ namespace SexyDb.Tests
         {
         }
 
-        private static string CreateFolder()
+        public TestDatabase(string folder) : base(folder)
+        {
+        }
+
+        public static string CreateFolder()
         {
             var fileName = Path.GetTempFileName();
             File.Delete(fileName);
